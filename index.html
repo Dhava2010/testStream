@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Stream & Controls</title>
+</head>
+<body>
+    <table width="1920" height="1080" style="border: 1px solid black;">
+        <tr>
+            <td width="960" style="border: 1px solid black;" >
+                <img id="myVideo1" style="width: 100%; height: auto; border: none;">
+            </td>
+
+            <td height="540" style="border: 1px solid black;">	
+                <table width="960" height="540">
+                    <tr>
+                        <td></td>
+                        <td align="center" style="border: 1px solid black;" valign="middle">
+                            <button type="button" style="font-size: 40px;" onclick="sendCommand('forward')">&uarr;</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="border: 1px solid black;" valign="middle">
+                            <button type="button" style="font-size: 40px;" onclick="sendCommand('left')">&larr;</button>
+                        </td>
+                        <td align="center" style="border: 1px solid black;" width="320" valign="middle">
+                            <button type="button" style="font-size: 45px;">&blacktriangleright;</button>
+                            <button type="button" style="font-size: 40px;" onclick="sendCommand('stop')">&blacksquare;</button>
+                        </td>
+                        <td align="center" style="border: 1px solid black;" valign="middle">
+                            <button type="button" style="font-size: 40px;" onclick="sendCommand('right')">&rarr;</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td align="center" style="border: 1px solid black;" valign="middle">
+                            <button type="button" style="font-size: 40px;" onclick="sendCommand('backward')">&darr;</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid black;">
+                <img id="myVideo2" style="width: 100%; height: auto; border: none;">
+            </td>
+            <td style="border: 1px solid black;"></td>
+        </tr>
+    </table>
+</body>
+
+<script>
+    const API_URL = 'http://127.0.0.1:5000/controls';
+
+    async function sendCommand(direction) {
+        console.log(`Attempting to send command: ${direction}`);
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ direction: direction }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Command successful. Direction:', result.direction);
+            } else {
+                const errorText = await response.text();
+                console.error('Command failed. Status:', response.status, 'Error:', errorText);
+            }
+        } catch (error) {
+            console.error('Network error during API call. Check if the Flask server is running:', error);
+        }
+    }
+    
+    // --- Video Stream Setup ---
+    const videoElement1 = document.getElementById('myVideo1');
+    const videoElement2 = document.getElementById('myVideo2');
+    
+    // **FIXED:** Must point to the Flask endpoint that generates the stream
+    const videoStreamUrl = 'http://127.0.0.1:5000/stream';
+    
+    // Set the src attribute of the <img> elements to start the MJPEG stream
+    videoElement1.src = videoStreamUrl;
+    videoElement2.src = videoStreamUrl;
+    
+    // The play() call is unnecessary for <img> tags
+</script>
+</html>
