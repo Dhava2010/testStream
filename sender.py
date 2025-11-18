@@ -3,7 +3,7 @@ import requests
 import base64
 import time
 
-API_URL = "http://127.0.0.1:5000/video_feed" # Changed to 127.0.0.1 for local testing
+API_URL = "http://192.168.240.3:5000/video_feed" # Changed to 127.0.0.1 for local testing
 
 cap = cv2.VideoCapture(0) 
 
